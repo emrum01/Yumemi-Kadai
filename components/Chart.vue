@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
   props: {
     populationData: {
@@ -46,20 +46,15 @@ export default {
   },
   watch: {
     populationData: function () {
-      let list = [];
       let lineCharts = this.$refs.lineCharts;
       lineCharts.removeSeries();
-      this.populationData[0].data.forEach((element) => {
-        this.years.push(element.year);
-      });
-      this.populationData.forEach((element) => {
-        // element.data.forEach((population) => {
-        //   list.push(population.value);
-        // });
-        element.data.forEach((population) => {
-          this.populations.push(population.value);
-        });
-        console.log(list);
+
+      this.populationData.forEach((element, index) => {
+        this.populations = element.data.map((population) => population.value);
+
+        if (index === 0) {
+          this.years = element.data.map((population) => population.year);
+        }
         lineCharts.addSeries({
           data: this.populations,
           name: element.prefCode,
@@ -105,12 +100,7 @@ export default {
         tooltip: {
           valueSuffix: "人",
         },
-        series: [
-          {
-            name: "人口推移",
-            data: this.populations,
-          },
-        ],
+        series: [],
       };
     },
   },
