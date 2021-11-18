@@ -7,18 +7,20 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       caption: "Chart caption here",
       title: "Basic Chart",
       subtitle: "More details here",
-      points: [10, 0, 8, 2, 6, 4, 5, 5],
+      years: [],
+      points: [],
       seriesColor: "",
       animationDuration: 1000,
       chartType: "",
       colorInputIsSupported: null,
-      chartTypes: [],
+      chartTypes: "line",
       durations: [0, 500, 1000, 2000],
       seriesName: "My Data",
       yAxis: "My Values",
@@ -39,84 +41,69 @@ export default {
         y: "",
       },
       sexy: false,
+      populationUrl:
+        "https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear",
     };
   },
   computed: {
     chartOptions() {
       const ctx = this;
       return {
-        caption: {
-          text: this.caption,
-          style: {
-            color: this.sexy ? this.invertedColor(0) : "#black",
-          },
-        },
         chart: {
-          backgroundColor: this.sexy
-            ? {
-                linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                stops: [
-                  [0, this.seriesColor],
-                  [0.5, "#ffffff"],
-                  [1, this.seriesColor],
-                ],
-              }
-            : "#ffffff",
-          className: "my-chart",
-          type: this.chartType.toLowerCase(),
-        },
-        plotOptions: {
-          series: {
-            cursor: "pointer",
-            point: {
-              events: {
-                click() {
-                  ctx.$emit("pointClicked", this);
-                },
-              },
-            },
-          },
-        },
-        yAxis: [
-          {
-            title: {
-              text: this.yAxis,
-              style: {
-                color: "#000000",
-              },
-            },
-          },
-        ],
-        title: {
-          style: {
-            color: this.sexy ? this.invertedColor(0) : "#black",
-          },
-          text:
-            `${this.title} ` +
-            (this.lastPointClicked.timestamp !== ""
-              ? `(Point clicked: ${this.lastPointClicked.timestamp})`
-              : ""),
+          type: this.chartType,
+          margin: [100, 100, 100, 100],
         },
         subtitle: {
-          style: {
-            color: this.sexy ? this.invertedColor(0) : "#black",
-          },
-          text: `${this.subtitle}`,
+          text: "2020年版",
         },
-        legend: {
-          itemStyle: {
-            color: this.sexy ? this.invertedColor(0) : "#black",
+        xAxis: {
+          title: {
+            text: "年",
+            align: "high",
+            offset: 5,
+            rotation: 0,
+            x: 20,
           },
+          categories: this.years,
+        },
+        yAxis: {
+          title: {
+            text: "人口",
+            align: "high",
+            offset: 10,
+            rotation: 0,
+            y: -20,
+          },
+        },
+        legend: "right",
+        tooltip: {
+          valueSuffix: "人",
         },
         series: [
           {
-            name: this.seriesName,
+            name: "人口推移",
             data: this.points,
-            color: this.seriesColor,
           },
         ],
       };
     },
+  },
+  mounted() {
+    axios
+      .get(this.populationUrl, {
+        headers: { "X-API-KEY": this.$config.X_API_KEY },
+        params: {
+          prefCode: 11,
+          cityCode: "-",
+        },
+      })
+      .then((res) => {
+        res.data.result.data[0].data.forEach((element) => {
+          this.points.push(element.value);
+          this.years.push(element.year);
+        });
+        console.log(Math.max(...this.points));
+      });
   },
 };
 </script>
