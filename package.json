@@ -19,7 +19,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "normalize.css": "^8.0.1",
     "nuxt": "^2.15.7",
-    "nuxt-highcharts": "^2.0.2"
+    "nuxt-highcharts": "^2.0.2",
+    "vue2-highcharts": "^1.2.5"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
