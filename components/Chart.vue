@@ -36,6 +36,9 @@ export default {
         chart: {
           type: "line",
         },
+        title: {
+          text: "",
+        },
         xAxis: {
           title: {
             text: "年",
@@ -157,7 +160,7 @@ export default {
 }
 @media screen and (min-width: 600px) {
   .Chart {
-    width: 400px;
+    width: 550px;
     padding: 25px 25px;
   }
 }
