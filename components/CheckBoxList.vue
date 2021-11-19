@@ -1,32 +1,52 @@
 <template lang="pug">
-  .checkbox-list
-    p 都道府県
-    //- 入力値に都道府県コードを上書きしてv-modelで双方向バインディング
-    label.checkbox(v-for="(item,index) in getPrefectures")
-      input(type="checkbox" id="checkbox" :value="item.prefCode" v-model="prefCodes")
-      label( for="checkbox")
-        | {{item.prefName}}
+  div 
+    .checkbox-list
+      p 都道府県
+      //- 入力値に都道府県コードを上書きしてv-modelで双方向バインディング
+      div
+        label.checkbox(v-for="(item,index) in prefResult")
+          input(type="checkbox" id="checkbox" :value="item.prefCode" v-model="prefCodes")
+          | {{item.prefName}}
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
+import axios from "axios";
 export default {
   data() {
     return {
       prefCodes: [],
+      prefResult: [],
     };
   },
-  mounted() {
-    this.$store.dispatch("prefecture/fetchPrefectures");
+  async mounted() {
+    await this.fetchPrefectures();
   },
-  computed: {
-    ...mapGetters("prefecture", ["getPrefectures"]),
+  computed: {},
+  methods: {
+    async fetchPrefectures() {
+      let res;
+      try {
+        res = await axios.get(
+          "https://opendata.resas-portal.go.jp/api/v1/prefectures",
+          {
+            headers: {
+              "X-API-KEY": this.$config.X_API_KEY,
+            },
+          }
+        );
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+      res.data.result.forEach((element) => {
+        this.prefResult.push(element);
+      });
+      this.$store.commit("prefecture/initPrefectures", res.data.result);
+    },
   },
-  methods: {},
   watch: {
-    prefCodes: function () {
-      this.$emit("updatePrefCodes", this.prefCodes);
+    prefCodes(newPrefCodes) {
+      this.$emit("updatePrefCodes", newPrefCodes);
     },
   },
 };

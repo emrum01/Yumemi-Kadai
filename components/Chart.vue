@@ -36,7 +36,6 @@ export default {
       return {
         chart: {
           type: "line",
-          margin: [100, 100, 100, 100],
         },
         subtitle: {
           text: "2020年版",
@@ -47,7 +46,7 @@ export default {
             align: "high",
             offset: 5,
             rotation: 0,
-            x: 20,
+            x: 10,
           },
           categories: this.years,
         },
@@ -85,11 +84,11 @@ export default {
     this.initLoad();
   },
   methods: {
-    initLoad() {
+    async initLoad() {
       let lineCharts = this.$refs.lineCharts;
-      lineCharts.addSeries([]);
-      lineCharts.removeSeries();
-      lineCharts.hideLoading();
+      await lineCharts.addSeries([]);
+      await lineCharts.removeSeries();
+      await lineCharts.hideLoading();
       this.getYears();
     },
     async getYears() {
@@ -123,6 +122,7 @@ export default {
         console.error(e);
         return;
       }
+      console.log(res);
       const prefPopulationYear = res.data.result.data[0].data.map((object) =>
         String(object.year)
       );
@@ -141,13 +141,12 @@ export default {
       await this.getPopulationList(this.prefCodes);
       let lineCharts = this.$refs.lineCharts;
 
-      lineCharts.removeSeries();
-      this.populationList.forEach((element) => {
+      await lineCharts.removeSeries();
+      await this.populationList.forEach((element) => {
         lineCharts.addSeries({
           name: this.getPrefectureId(element.prefCode),
           data: element.populationValue,
         });
-        console.log(this.getPrefectureId(element.prefCode));
       });
     },
   },
@@ -156,6 +155,19 @@ export default {
 
 <style lang="scss" scoped>
 .Chart {
-  padding: 25px 25px;
+  width: 90%;
+  padding: 5%;
+}
+@media screen and (min-width: 600px) {
+  .Chart {
+    width: 400px;
+    padding: 25px 25px;
+  }
+}
+@media screen and (min-width: 1025px) {
+  .Chart {
+    width: 800px;
+    padding: 25px 25px;
+  }
 }
 </style>
