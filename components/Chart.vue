@@ -1,5 +1,5 @@
 <template lang="pug">
-  div
+  .Chart
     VueHighcharts(
     :options="chartOptions"
     ref="lineCharts"
@@ -154,4 +154,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.Chart {
+  padding: 25px 25px;
+}
+</style>
