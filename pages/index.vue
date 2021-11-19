@@ -1,5 +1,6 @@
 <template lang="pug">
   div
+    Header
     CheckBoxList(:prefCodes="prefCodes" @updatePrefCodes="updatePrefCodes")
     Chart(:prefCodes="prefCodes")
 </template>
