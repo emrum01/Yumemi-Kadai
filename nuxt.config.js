@@ -21,7 +21,10 @@ export default {
   css: ["normalize.css"],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: "~plugins/vue-highcharts.js", ssr: false }],
+  plugins: [
+    { src: "~plugins/vue-highcharts.js", ssr: false },
+    { src: "~/plugins/nuxtClientInit.js", ssr: false },
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
