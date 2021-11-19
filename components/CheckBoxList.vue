@@ -41,7 +41,6 @@ export default {
       res.data.result.forEach((element) => {
         this.prefResult.push(element);
       });
-      this.$store.commit("prefecture/initPrefectures", res.data.result);
     },
   },
   watch: {

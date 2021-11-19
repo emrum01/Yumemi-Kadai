@@ -144,7 +144,6 @@ export default {
           name: this.getPrefectureId(element.prefCode),
           data: element.populationValue,
         });
-        console.log(this.getPrefectureId(element.prefCode));
       });
     },
   },
