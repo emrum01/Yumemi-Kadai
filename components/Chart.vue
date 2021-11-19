@@ -7,10 +7,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import axios from "axios";
 export default {
   props: {
-    populationData: {
+    prefCodes: {
       type: Array,
       default: () => {
         return [];
@@ -20,58 +20,20 @@ export default {
   },
   data() {
     return {
-      caption: "Chart caption here",
-      title: "Basic Chart",
-      subtitle: "More details here",
-      years: [],
-      populations: [],
-      seriesColor: "",
-      animationDuration: 1000,
-      chartType: "",
-      colorInputIsSupported: null,
-      chartTypes: "line",
-      durations: [0, 500, 1000, 2000],
-      seriesName: "My Data",
-      yAxis: "My Values",
-      watchers: ["options.title", "options.series"],
-      lastPointClicked: {
-        timestamp: "",
-        x: "",
-        y: "",
-      },
-      sexy: false,
       populationUrl:
         "https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear",
+      populationList: [],
+      populationInfo: {},
+      population: [],
+      years: [],
     };
-  },
-  watch: {
-    populationData: function () {
-      let lineCharts = this.$refs.lineCharts;
-      lineCharts.removeSeries();
-
-      this.populationData.forEach((element, index) => {
-        this.populations = element.data.map((population) => population.value);
-
-        if (index === 0) {
-          this.years = element.data.map((population) => population.year);
-        }
-        lineCharts.addSeries({
-          data: this.populations,
-          name: element.prefCode,
-        });
-        this.populations = [];
-      });
-    },
-  },
-  mounted() {
-    this.initLoad();
   },
   computed: {
     chartOptions() {
       const ctx = this;
       return {
         chart: {
-          type: this.chartType,
+          type: "line",
           margin: [100, 100, 100, 100],
         },
         subtitle: {
@@ -96,13 +58,29 @@ export default {
             y: -20,
           },
         },
-        legend: "right",
-        tooltip: {
-          valueSuffix: "人",
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxheight: 400,
+              },
+              chartOptions: {
+                legend: {
+                  layout: "vertical",
+                  align: "right",
+                  verticalAlign: "top",
+                },
+              },
+            },
+          ],
         },
+        legend: "right",
         series: [],
       };
     },
+  },
+  mounted() {
+    this.initLoad();
   },
   methods: {
     initLoad() {
@@ -110,6 +88,64 @@ export default {
       lineCharts.addSeries([]);
       lineCharts.removeSeries();
       lineCharts.hideLoading();
+      this.getYears();
+    },
+    async getYears() {
+      let res = await this.getPopulation(1);
+      this.years = res.years;
+    },
+    async getPopulationList(prefCodes) {
+      this.populationList = [];
+      const length = prefCodes.length;
+      for (let i = 0; i < length; i++) {
+        let res = await this.getPopulation(prefCodes[i]);
+        this.populationList.push(res);
+      }
+    },
+    async getPopulation(n) {
+      let res;
+      try {
+        res = await axios.get(
+          "https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear",
+          {
+            headers: {
+              "X-API-KEY": this.$config.X_API_KEY,
+            },
+            params: {
+              prefCode: n,
+              cityCode: "-",
+            },
+          }
+        );
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+      const prefPopulationYear = res.data.result.data[0].data.map((object) =>
+        String(object.year)
+      );
+      const prefPopulationValue = res.data.result.data[0].data.map(
+        (object) => object.value
+      );
+      return {
+        prefCode: n,
+        years: prefPopulationYear,
+        populationValue: prefPopulationValue,
+      };
+    },
+  },
+  watch: {
+    prefCodes: async function () {
+      await this.getPopulationList(this.prefCodes);
+      let lineCharts = this.$refs.lineCharts;
+
+      lineCharts.removeSeries();
+      this.populationList.forEach((element) => {
+        lineCharts.addSeries({
+          data: element.populationValue,
+          name: element.prefCode,
+        });
+      });
     },
   },
 };
