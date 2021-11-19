@@ -6,6 +6,13 @@ export const getters = {
   getPrefectures(state) {
     return state.prefectures;
   },
+
+  getPrefectureId: (state) => (id) => {
+    const prefecture = state.prefectures.find(
+      (prefecture) => prefecture.prefCode === id
+    );
+    return prefecture ? prefecture.prefName : "";
+  },
 };
 
 export const mutations = {

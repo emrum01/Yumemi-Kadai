@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import axios from "axios";
 export default {
   props: {
@@ -29,6 +30,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("prefecture", ["getPrefectureId"]),
     chartOptions() {
       const ctx = this;
       return {
@@ -142,9 +144,10 @@ export default {
       lineCharts.removeSeries();
       this.populationList.forEach((element) => {
         lineCharts.addSeries({
+          name: this.getPrefectureId(element.prefCode),
           data: element.populationValue,
-          name: element.prefCode,
         });
+        console.log(this.getPrefectureId(element.prefCode));
       });
     },
   },
