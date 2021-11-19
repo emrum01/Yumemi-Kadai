@@ -9,7 +9,6 @@ const mutations = {
 const actions = {
   initEnvURL({ commit }, $config) {
     commit("set_X_API_KEY", $config);
-    console.log("called");
   },
 };
 export default { state, mutations, actions };
