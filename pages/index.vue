@@ -32,7 +32,6 @@ export default {
             prefCode: element.prefCode,
             prefName: element.prefName,
             isChecked: false,
-            isFetched: false,
           });
         });
       });
@@ -68,7 +67,6 @@ export default {
           })
           .then((res) => {
             let populationTransitionList = res.data.result.data[0].data;
-            this.prefectures[index].isFetched = true;
             this.populationData.push({
               data: populationTransitionList,
               prefCode: prefCode,
