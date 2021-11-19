@@ -32,13 +32,9 @@ export default {
   computed: {
     ...mapGetters("prefecture", ["getPrefectureId"]),
     chartOptions() {
-      const ctx = this;
       return {
         chart: {
           type: "line",
-        },
-        subtitle: {
-          text: "2020年版",
         },
         xAxis: {
           title: {
@@ -75,7 +71,9 @@ export default {
             },
           ],
         },
-        legend: "right",
+        legend: {
+          align: "right",
+        },
         series: [],
       };
     },
@@ -122,7 +120,6 @@ export default {
         console.error(e);
         return;
       }
-      console.log(res);
       const prefPopulationYear = res.data.result.data[0].data.map((object) =>
         String(object.year)
       );
@@ -147,6 +144,7 @@ export default {
           name: this.getPrefectureId(element.prefCode),
           data: element.populationValue,
         });
+        console.log(this.getPrefectureId(element.prefCode));
       });
     },
   },
